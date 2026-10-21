@@ -1,0 +1,79 @@
+{
+  "model_filename": "xgb_model.pkl",
+  "algorithm": "XGBoost Regressor (Optimized)",
+  "hyperparameters": {
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "random_state": 42
+  },
+  "metrics": {
+    "r2_score": 0.8777,
+    "mae": 2409.17,
+    "mse": 18981897.1,
+    "rmse": 4356.82,
+    "rf_r2_score": 0.8674
+  },
+  "feature_order": [
+    "age",
+    "sex",
+    "bmi",
+    "children",
+    "smoker",
+    "region_northeast",
+    "region_northwest",
+    "region_southeast",
+    "region_southwest",
+    "age_bmi",
+    "smoker_bmi",
+    "age_squared",
+    "bmi_squared"
+  ],
+  "engineered_features": [
+    "age_bmi",
+    "smoker_bmi",
+    "age_squared",
+    "bmi_squared"
+  ],
+  "base_features": [
+    "age",
+    "sex",
+    "bmi",
+    "children",
+    "smoker",
+    "region"
+  ],
+  "feature_encodings": {
+    "sex": {
+      "type": "binary_numeric",
+      "mapping": {
+        "female": 0,
+        "male": 1
+      }
+    },
+    "smoker": {
+      "type": "binary_numeric",
+      "mapping": {
+        "no": 0,
+        "yes": 1
+      }
+    },
+    "region": {
+      "type": "one_hot",
+      "categories": [
+        "northeast",
+        "northwest",
+        "southeast",
+        "southwest"
+      ],
+      "columns": [
+        "region_northeast",
+        "region_northwest",
+        "region_southeast",
+        "region_southwest"
+      ]
+    }
+  },
+  "currency": "USD",
+  "currency_symbol": "$"
+}

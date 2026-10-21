@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result | InsurePredict AI</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="result-page-body">
+
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="logo-text">InsurePredict<span class="logo-accent">AI</span></span>
+      </a>
+      <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline">Back to Home</a>
+    </div>
+  </header>
+
+  <main class="result-main-container">
+    {% if success is defined and not success %}
+      <div class="result-error-card">
+        <div class="error-icon-box">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2>Prediction Error</h2>
+        <p class="error-desc">{{ error|default('Unable to process prediction request.') }}</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-4">Try Again</a>
+      </div>
+    {% else %}
+      <div class="prediction-standalone-card">
+        <div class="result-badge-row">
+          <span class="badge badge-success">ML Model Prediction Verified</span>
+          <span class="chip font-mono">XGBoost Regressor</span>
+        </div>
+
+        <div class="result-headline">
+          <span class="result-lead">Estimated Annual Medical Charges</span>
+          <div class="result-amount-display">{{ result.prediction_formatted }}</div>
+          <span class="result-currency-tag">{{ result.currency }} / Year</span>
+        </div>
+
+        <!-- Submitted Profile Summary -->
+        <div class="result-inputs-summary">
+          <h4 class="summary-title">Submitted Profile</h4>
+          <div class="summary-chips">
+            <span class="summary-chip">Age: <strong>{{ result.user_inputs.age }} yrs</strong></span>
+            <span class="summary-chip">Sex: <strong>{{ result.user_inputs.sex }}</strong></span>
+            <span class="summary-chip">BMI: <strong>{{ result.user_inputs.bmi }}</strong> ({{ result.user_inputs.bmi_category }})</span>
+            <span class="summary-chip">Smoker: <strong>{{ result.user_inputs.smoker }}</strong></span>
+            <span class="summary-chip">Dependents: <strong>{{ result.user_inputs.children }}</strong></span>
+            <span class="summary-chip">Region: <strong>{{ result.user_inputs.region }}</strong></span>
+          </div>
+        </div>
+
+        <!-- Engineered Features -->
+        <div class="engineered-features-box">
+          <h4 class="box-title">Computed Feature Engineering Terms</h4>
+          <div class="eng-grid">
+            <div class="eng-item">
+              <span class="eng-name">age × bmi</span>
+              <span class="eng-val">{{ result.engineered_features.age_bmi }}</span>
+            </div>
+            <div class="eng-item">
+              <span class="eng-name">smoker × bmi</span>
+              <span class="eng-val">{{ result.engineered_features.smoker_bmi }}</span>
+            </div>
+            <div class="eng-item">
+              <span class="eng-name">age²</span>
+              <span class="eng-val">{{ result.engineered_features.age_squared }}</span>
+            </div>
+            <div class="eng-item">
+              <span class="eng-name">bmi²</span>
+              <span class="eng-val">{{ result.engineered_features.bmi_squared }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk Factor Insights -->
+        <div class="insights-box">
+          <h4 class="box-title">Risk Driver Analysis</h4>
+          <p><strong>Smoking Factor:</strong> {{ result.insights.smoker_impact }}</p>
+          <p><strong>BMI Classification:</strong> {{ result.insights.bmi_impact }}</p>
+        </div>
+
+        <div class="mt-4">
+          <a href="{{ url_for('index') }}" class="btn btn-primary btn-block">Calculate Another Prediction</a>
+        </div>
+      </div>
+    {% endif %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="disclaimer-text">
+        <strong>Medical &amp; Financial Disclaimer:</strong> This tool provides an estimate based on a machine learning model and the data used to train it. Predictions are not actual insurance quotes, medical advice, or a guarantee of insurance eligibility or pricing.
+      </p>
+      <p>&copy; 2026 InsurePredict AI.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

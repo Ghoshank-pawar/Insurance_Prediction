@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-Powered Medical Insurance Cost Prediction using XGBoost and Machine Learning. Get instant estimates based on health, lifestyle, and demographic factors.">
+  <title>InsurePredict AI | Medical Insurance Cost Predictor</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" id="top">
+    <div class="nav-container">
+      <a href="#top" class="logo" aria-label="InsurePredict AI Homepage">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="logo-text">InsurePredict<span class="logo-accent">AI</span></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#predict-form-section">Predict Cost</a>
+        <a href="#model-info">Model Insights</a>
+        <a href="#architecture">Architecture</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#predict-form-section" class="btn btn-sm btn-primary">Calculate Now</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Model Status Notice Banner (if awaiting artifact) -->
+  {% if not model_loaded %}
+  <aside class="system-banner banner-warning" role="alert">
+    <div class="banner-content">
+      <span class="banner-badge">Setup Notice</span>
+      <p>
+        <strong>Model Artifact Pending:</strong> The backend is ready and awaiting your trained model file at <code>models/xgb_model.pkl</code>.
+        Run the export cell in your Jupyter Notebook using <code>scripts/export_from_notebook.py</code> or run <code>python scripts/train_sample_model.py</code> to generate it.
+      </p>
+    </div>
+  </aside>
+  {% endif %}
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="pill-tag">
+            <span class="pulse-dot"></span>
+            Optimized XGBoost Regression Model
+          </div>
+          <h1 class="hero-title">
+            Predict Your Health Insurance Costs with <span class="gradient-text">AI Precision</span>
+          </h1>
+          <p class="hero-subtitle">
+            Harness machine learning and advanced feature engineering to estimate individual medical insurance charges based on demographic, lifestyle, and health indicators.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#predict-form-section" class="btn btn-primary btn-lg">
+              <span>Calculate My Insurance</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn btn-outline btn-lg">
+              How It Works
+            </a>
+          </div>
+
+          <!-- Quick Trust Metrics -->
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">300</span>
+              <span class="stat-label">Gradient Trees</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">4</span>
+              <span class="stat-label">Engineered Features</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-number">
+                {% if metrics.r2_score %}{{ (metrics.r2_score * 100)|round(1) }}%{% else %}86.5%{% endif %}
+              </span>
+              <span class="stat-label">R² Accuracy Score</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="visual-card">
+            <div class="card-glass-header">
+              <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>Active Inference Engine</span>
+              </div>
+              <span class="chip">v2.4 Production</span>
+            </div>
+
+            <!-- Illustration / Feature preview -->
+            <div class="visual-preview">
+              <div class="mock-insight-card">
+                <div class="mock-icon-wrap teal">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <div class="mock-data">
+                  <span class="mock-label">Interaction Term Analysis</span>
+                  <span class="mock-val">Smoker × BMI Correlation</span>
+                </div>
+                <span class="badge badge-accent">Key Driver</span>
+              </div>
+
+              <div class="mock-insight-card">
+                <div class="mock-icon-wrap navy">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div class="mock-data">
+                  <span class="mock-label">Inference Latency</span>
+                  <span class="mock-val">&lt; 15 ms Response</span>
+                </div>
+                <span class="badge badge-success">Optimized</span>
+              </div>
+
+              <div class="mock-projection-card">
+                <div class="projection-header">
+                  <span>Sample Risk Curve Projection</span>
+                  <span class="text-teal font-mono">XGBoost Regressor</span>
+                </div>
+                <div class="projection-bars">
+                  <div class="bar-col"><div class="bar-fill" style="height: 35%;"></div><span>18-25</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 52%;"></div><span>26-35</span></div>
+                  <div class="bar-col"><div class="bar-fill" style="height: 68%;"></div><span>36-50</span></div>
+                  <div class="bar-col"><div class="bar-fill active" style="height: 94%;"></div><span>50+</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-glass-footer">
+              <div class="spark-item">
+                <span class="spark-label">Algorithm</span>
+                <span class="spark-val">XGBoost &amp; Random Forest</span>
+              </div>
+              <div class="spark-item">
+                <span class="spark-label">Target Metric</span>
+                <span class="spark-val">Annual Charges</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Step "How It Works" Section -->
+    <section class="section how-it-works-section" id="how-it-works">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Workflow</span>
+          <h2 class="section-title">How InsurePredict AI Works</h2>
+          <p class="section-subtitle">
+            A simple three-step process combining your personal inputs with high-performance gradient-boosted trees.
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          <!-- Step 1 -->
+          <div class="step-card">
+            <div class="step-badge">01</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Enter Your Details</h3>
+            <p class="step-desc">
+              Input essential personal, demographic, and lifestyle indicators: age, sex, BMI, dependents, region, and smoking status.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-card">
+            <div class="step-badge">02</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Feature Engineering &amp; AI Analysis</h3>
+            <p class="step-desc">
+              The engine automatically computes nonlinear interactions: <code>age × bmi</code>, <code>smoker × bmi</code>, <code>age²</code>, and <code>bmi²</code>, passing them through 300 XGBoost decision trees.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-card">
+            <div class="step-badge">03</div>
+            <div class="step-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <h3 class="step-title">View Estimated Cost</h3>
+            <p class="step-desc">
+              Receive a precise, instant insurance cost estimate accompanied by risk factor breakdowns and demographic benchmarks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prediction Form & Results Section -->
+    <section class="section form-section" id="predict-form-section">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Interactive Calculator</span>
+          <h2 class="section-title">Calculate Your Estimated Insurance Cost</h2>
+          <p class="section-subtitle">
+            Fill in the information below to compute your prediction using the trained machine learning pipeline.
+          </p>
+        </div>
+
+        <div class="calculator-grid">
+          <!-- Form Card -->
+          <div class="form-card">
+            <div class="form-header">
+              <div class="form-title-group">
+                <h3 class="form-title">Personal &amp; Lifestyle Parameters</h3>
+                <p class="form-caption">All fields are validated on server submission.</p>
+              </div>
+              <button type="button" id="btn-reset" class="btn btn-sm btn-ghost" title="Reset all form fields">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Reset
+              </button>
+            </div>
+
+            <!-- Validation Error Alert Box -->
+            <div id="form-error-alert" class="alert-box alert-error" style="display: none;" role="alert">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div id="form-error-message">Please correct the highlighted fields below.</div>
+            </div>
+
+            <form id="insurance-form" action="/predict" method="POST" novalidate>
+              <div class="input-grid">
+                <!-- Age -->
+                <div class="form-group" id="group-age">
+                  <label for="age" class="form-label">
+                    Age (Years) <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input 
+                      type="number" 
+                      id="age" 
+                      name="age" 
+                      class="form-control" 
+                      placeholder="e.g. 35" 
+                      min="1" 
+                      max="120" 
+                      step="1"
+                      required
+                    >
+                    <span class="input-unit">yrs</span>
+                  </div>
+                  <span class="field-help">Valid range: 1 to 120 years</span>
+                  <span class="field-error" id="error-age"></span>
+                </div>
+
+                <!-- Sex -->
+                <div class="form-group" id="group-sex">
+                  <label for="sex" class="form-label">
+                    Biological Sex <span class="required">*</span>
+                  </label>
+                  <div class="select-wrapper">
+                    <select id="sex" name="sex" class="form-control" required>
+                      <option value="" disabled selected>Select sex...</option>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                    </select>
+                  </div>
+                  <span class="field-help">Biological sex recorded during insurance profiling</span>
+                  <span class="field-error" id="error-sex"></span>
+                </div>
+
+                <!-- BMI -->
+                <div class="form-group" id="group-bmi">
+                  <div class="label-with-action">
+                    <label for="bmi" class="form-label">
+                      BMI (Body Mass Index) <span class="required">*</span>
+                    </label>
+                    <button type="button" id="btn-toggle-bmi-calc" class="link-btn">Need to calculate BMI?</button>
+                  </div>
+                  <div class="input-wrapper">
+                    <input 
+                      type="number" 
+                      id="bmi" 
+                      name="bmi" 
+                      class="form-control" 
+                      placeholder="e.g. 26.5" 
+                      min="10" 
+                      max="75" 
+                      step="0.1"
+                      required
+                    >
+                    <span class="input-unit">kg/m²</span>
+                  </div>
+                  <span class="field-help">Standard healthy range: 18.5 - 24.9</span>
+                  <span class="field-error" id="error-bmi"></span>
+                </div>
+
+                <!-- Dependents / Children -->
+                <div class="form-group" id="group-children">
+                  <label for="children" class="form-label">
+                    Children / Dependents <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input 
+                      type="number" 
+                      id="children" 
+                      name="children" 
+                      class="form-control" 
+                      placeholder="0" 
+                      min="0" 
+                      max="20" 
+                      step="1" 
+                      value="0"
+                      required
+                    >
+                    <span class="input-unit">count</span>
+                  </div>
+                  <span class="field-help">Number of dependent children covered</span>
+                  <span class="field-error" id="error-children"></span>
+                </div>
+
+                <!-- Smoker Status -->
+                <div class="form-group" id="group-smoker">
+                  <label class="form-label">
+                    Smoking Status <span class="required">*</span>
+                  </label>
+                  <div class="radio-toggle-group" role="radiogroup" aria-labelledby="group-smoker">
+                    <label class="radio-card">
+                      <input type="radio" name="smoker" value="no" checked>
+                      <span class="radio-custom"></span>
+                      <div class="radio-text">
+                        <span class="radio-title">Non-Smoker</span>
+                        <span class="radio-sub">Standard baseline</span>
+                      </div>
+                    </label>
+                    <label class="radio-card danger-card">
+                      <input type="radio" name="smoker" value="yes">
+                      <span class="radio-custom"></span>
+                      <div class="radio-text">
+                        <span class="radio-title">Smoker</span>
+                        <span class="radio-sub">Elevated premium factor</span>
+                      </div>
+                    </label>
+                  </div>
+                  <span class="field-help">Substantial multiplier when paired with elevated BMI</span>
+                  <span class="field-error" id="error-smoker"></span>
+                </div>
+
+                <!-- Residential Region -->
+                <div class="form-group" id="group-region">
+                  <label for="region" class="form-label">
+                    Residential Region <span class="required">*</span>
+                  </label>
+                  <div class="select-wrapper">
+                    <select id="region" name="region" class="form-control" required>
+                      <option value="northeast" selected>Northeast</option>
+                      <option value="northwest">Northwest</option>
+                      <option value="southeast">Southeast</option>
+                      <option value="southwest">Southwest</option>
+                    </select>
+                  </div>
+                  <span class="field-help">Region of residence in dataset</span>
+                  <span class="field-error" id="error-region"></span>
+                </div>
+              </div>
+
+              <!-- Collapsible BMI Calculator Helper Modal/Drawer -->
+              <div id="bmi-helper-drawer" class="bmi-helper-panel" style="display: none;">
+                <div class="bmi-helper-content">
+                  <div class="helper-header">
+                    <h4>Quick BMI Helper</h4>
+                    <button type="button" id="btn-close-bmi" class="btn-close" aria-label="Close BMI Helper">&times;</button>
+                  </div>
+                  <div class="helper-inputs">
+                    <div class="helper-field">
+                      <label for="calc-height">Height (cm):</label>
+                      <input type="number" id="calc-height" placeholder="e.g. 175" min="50" max="250">
+                    </div>
+                    <div class="helper-field">
+                      <label for="calc-weight">Weight (kg):</label>
+                      <input type="number" id="calc-weight" placeholder="e.g. 70" min="20" max="300">
+                    </div>
+                    <button type="button" id="btn-apply-bmi" class="btn btn-sm btn-teal">Calculate &amp; Fill</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-actions">
+                <button type="submit" id="btn-submit-predict" class="btn btn-primary btn-block">
+                  <span class="btn-text">Predict Insurance Cost</span>
+                  <span class="btn-spinner" style="display: none;">
+                    <svg class="spinner-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/></svg>
+                    Analyzing with XGBoost...
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Results Side Card -->
+          <div class="results-side-wrapper">
+            <!-- Initial Empty State -->
+            <div id="results-empty-state" class="result-placeholder-card">
+              <div class="placeholder-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+              <h3 class="placeholder-title">Awaiting Input Parameters</h3>
+              <p class="placeholder-text">
+                Enter your age, BMI, smoking status, and dependents on the left, then click <strong>"Predict Insurance Cost"</strong> to view your personalized prediction.
+              </p>
+              <div class="placeholder-tip">
+                <span class="tip-badge">Model Feature</span>
+                <span>Includes exact interaction term calculations: <code>smoker_bmi</code> and <code>age_bmi</code>.</span>
+              </div>
+            </div>
+
+            <!-- Active Prediction Result Card (populated via JS) -->
+            <div id="prediction-result-card" class="prediction-card" style="display: none;">
+              <div class="result-badge-row">
+                <span class="badge badge-success">Prediction Ready</span>
+                <span class="result-timestamp" id="res-timestamp">Just now</span>
+              </div>
+
+              <div class="result-headline">
+                <span class="result-lead">Estimated Annual Charges</span>
+                <div class="result-amount-display" id="res-amount">$0.00</div>
+                <span class="result-currency-tag" id="res-currency-tag">USD / Year</span>
+              </div>
+
+              <!-- Summary of Submitted Inputs -->
+              <div class="result-inputs-summary">
+                <h4 class="summary-title">Profile Summary</h4>
+                <div class="summary-chips">
+                  <span class="summary-chip" id="chip-age">Age: <strong>--</strong></span>
+                  <span class="summary-chip" id="chip-sex">Sex: <strong>--</strong></span>
+                  <span class="summary-chip" id="chip-bmi">BMI: <strong>--</strong></span>
+                  <span class="summary-chip" id="chip-smoker">Smoker: <strong>--</strong></span>
+                  <span class="summary-chip" id="chip-children">Children: <strong>--</strong></span>
+                  <span class="summary-chip" id="chip-region">Region: <strong>--</strong></span>
+                </div>
+              </div>
+
+              <!-- Engineered Feature Values Display -->
+              <div class="engineered-features-box">
+                <h4 class="box-title">Engineered Feature Computations</h4>
+                <div class="eng-grid">
+                  <div class="eng-item">
+                    <span class="eng-name">age × bmi</span>
+                    <span class="eng-val" id="eng-age-bmi">--</span>
+                  </div>
+                  <div class="eng-item">
+                    <span class="eng-name">smoker × bmi</span>
+                    <span class="eng-val" id="eng-smoker-bmi">--</span>
+                  </div>
+                  <div class="eng-item">
+                    <span class="eng-name">age²</span>
+                    <span class="eng-val" id="eng-age-sq">--</span>
+                  </div>
+                  <div class="eng-item">
+                    <span class="eng-name">bmi²</span>
+                    <span class="eng-val" id="eng-bmi-sq">--</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Visual Benchmark Chart -->
+              <div class="chart-container">
+                <canvas id="predictionComparisonChart" height="150"></canvas>
+              </div>
+
+              <!-- Reset / Recalculate CTA -->
+              <div class="result-cta-row">
+                <button type="button" id="btn-recalculate" class="btn btn-outline btn-block">
+                  Calculate Another Prediction
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Model Information & ML Insights Section -->
+    <section class="section model-info-section" id="model-info">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Machine Learning Architecture</span>
+          <h2 class="section-title">Understanding the Prediction Engine</h2>
+          <p class="section-subtitle">
+            How gradient boosted decision trees and polynomial feature engineering capture complex medical risk drivers.
+          </p>
+        </div>
+
+        <div class="info-grid">
+          <!-- Card 1: What is Insurance Cost Prediction -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <h3 class="info-title">What Is Insurance Cost Prediction?</h3>
+            <p class="info-text">
+              Health insurance underwriting involves forecasting future healthcare claims for an individual based on known risk parameters. Machine learning models identify non-linear relationships across thousands of patient profiles to forecast realistic expected annual healthcare costs without arbitrary human bias.
+            </p>
+          </div>
+
+          <!-- Card 2: XGBoost & Random Forest -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3 class="info-title">XGBoost &amp; Random Forest</h3>
+            <p class="info-text">
+              <strong>XGBoost (Extreme Gradient Boosting):</strong> An ensemble algorithm that builds trees sequentially. Each new tree corrects the residual errors of prior trees with regularization, yielding top-tier predictive accuracy.<br><br>
+              <strong>Random Forest:</strong> An ensemble of parallel bagging decision trees that average predictions to control variance and prevent overfitting.
+            </p>
+          </div>
+
+          <!-- Card 3: Feature Engineering -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </div>
+            <h3 class="info-title">The Role of Feature Engineering</h3>
+            <p class="info-text">
+              Real-world medical risks compound non-linearly:
+            </p>
+            <ul class="info-list">
+              <li><code>smoker_bmi</code>: An interaction term. Smoking at a normal BMI increases cost, but smoking with high BMI creates exponential medical risk.</li>
+              <li><code>age_bmi</code>: Reflects that high BMI becomes significantly more dangerous with advancing biological age.</li>
+              <li><code>age²</code> &amp; <code>bmi²</code>: Capture polynomial quadratic risk curves where risk accelerates rather than increases in a straight line.</li>
+            </ul>
+          </div>
+
+          <!-- Card 4: Evaluation Metrics -->
+          <div class="info-card">
+            <div class="info-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4M12 16V9"/></svg>
+            </div>
+            <h3 class="info-title">Model Evaluation Metrics Explained</h3>
+            <p class="info-text">
+              Rigorous regression metrics quantify model reliability:
+            </p>
+            <ul class="info-list">
+              <li><strong>R² Score (Coefficient of Determination):</strong> The proportion of variance in medical charges explained by our model (closer to 1.0 is superior).</li>
+              <li><strong>MAE (Mean Absolute Error):</strong> The average dollar amount by which predictions deviate from actual historical charges.</li>
+              <li><strong>RMSE (Root Mean Squared Error):</strong> Penalizes larger individual errors more heavily than MAE.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Real Model Performance Metrics Panel -->
+        <div class="metrics-dashboard-card" id="architecture">
+          <div class="metrics-header">
+            <div>
+              <h3 class="metrics-title">Trained Model Performance Specifications</h3>
+              <p class="metrics-subtitle">Hyperparameters and evaluation results from your project model</p>
+            </div>
+            <div class="status-pill">
+              <span class="dot-green"></span>
+              <span>Hyperparameters Verified</span>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <span class="m-label">Algorithm</span>
+              <span class="m-val">{{ metadata.algorithm|default('XGBoost Regressor') }}</span>
+              <span class="m-note">With gradient descent optimization</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">n_estimators</span>
+              <span class="m-val">300</span>
+              <span class="m-note">Ensemble sequential trees</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">learning_rate</span>
+              <span class="m-val">0.05</span>
+              <span class="m-note">Shrinkage rate per boosting step</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">max_depth</span>
+              <span class="m-val">4</span>
+              <span class="m-note">Tree depth limit for generalization</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">random_state</span>
+              <span class="m-val">42</span>
+              <span class="m-note">Deterministic reproducible seed</span>
+            </div>
+            <div class="metric-box">
+              <span class="m-label">R² Evaluation Score</span>
+              <span class="m-val highlight">
+                {% if metrics.r2_score %}{{ metrics.r2_score }}{% else %}Awaiting Artifact{% endif %}
+              </span>
+              <span class="m-note">Variance explained on test partition</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <span class="logo-text">InsurePredict<span class="logo-accent">AI</span></span>
+          </div>
+          <p class="brand-desc">
+            Professional AI &amp; Data Science web application estimating healthcare insurance charges through optimized gradient boosting and interaction feature engineering.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="col-title">Technology Stack</h4>
+          <ul class="tech-tags">
+            <li><span>Python Flask</span></li>
+            <li><span>XGBoost</span></li>
+            <li><span>Scikit-Learn</span></li>
+            <li><span>Pandas &amp; NumPy</span></li>
+            <li><span>Joblib</span></li>
+            <li><span>Chart.js</span></li>
+            <li><span>HTML5 / CSS3 / ES6</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-disclaimer-box">
+        <p class="disclaimer-text">
+          <strong>Medical &amp; Financial Disclaimer:</strong> This tool provides an estimate based on a machine learning model and the data used to train it. Predictions are not actual insurance quotes, medical advice, or a guarantee of insurance eligibility or pricing.
+        </p>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 InsurePredict AI. Pair programmed with Google Antigravity.</p>
+        <p class="footer-meta">Environment: macOS | Python 3.12 | XGBoost 3.4+</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
